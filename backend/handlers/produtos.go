@@ -11,5 +11,5 @@ func NewProdutoHandler() *ProdutoHandler {
 }
 
 func (h ProdutoHandler) Listar(c fiber.Ctx) error {
-	return c.SendString("Listar produtos (vindo do handler produtos)")
+	return c.SendString("Lista os produtos disponíveis para carregamento")
 }

@@ -1,19 +1,16 @@
 package routes
 
-import "github.com/gofiber/fiber/v3"
+import (
+	"fuel-terminal/handlers"
+
+	"github.com/gofiber/fiber/v3"
+)
 
 func SetupRoutes(app *fiber.App) {
+	produto := handlers.NewProdutoHandler()
+
 	api := app.Group("/api/v1")
 
-	api.Get("/", func(c fiber.Ctx) error {
-		return c.SendString("Hello, World!")
-	})
-
-	api.Get("/teste", func(c fiber.Ctx) error {
-		return c.SendString("teste")
-	})
-
-	api.Get("/:teste", func(c fiber.Ctx) error {
-		return c.SendString("teste parametro: " + c.Params("teste"))
-	})
+	// Produtos
+	api.Get("/produtos", produto.Listar)
 }

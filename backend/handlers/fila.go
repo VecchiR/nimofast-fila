@@ -1,12 +1,16 @@
 package handlers
 
-import "github.com/gofiber/fiber/v3"
+import (
+	"database/sql"
+
+	"github.com/gofiber/fiber/v3"
+)
 
 type FilaHandler struct {
 	// .... mas não sei o que colocar aqui :,)
 }
 
-func NewFilaHandler() *FilaHandler {
+func NewFilaHandler(database *sql.DB) *FilaHandler {
 	return &FilaHandler{}
 }
 

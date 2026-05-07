@@ -1,15 +1,16 @@
 package routes
 
 import (
+	"database/sql"
 	"fuel-terminal/handlers"
 
 	"github.com/gofiber/fiber/v3"
 )
 
-func SetupRoutes(app *fiber.App) {
-	produto := handlers.NewProdutoHandler()
-	motorista := handlers.NewMotoristaHandler()
-	fila := handlers.NewFilaHandler()
+func SetupRoutes(app *fiber.App, database *sql.DB) {
+	produto := handlers.NewProdutoHandler(database)
+	motorista := handlers.NewMotoristaHandler(database)
+	fila := handlers.NewFilaHandler(database)
 
 	api := app.Group("/api/v1")
 

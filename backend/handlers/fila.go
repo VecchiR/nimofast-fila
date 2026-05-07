@@ -7,11 +7,11 @@ import (
 )
 
 type FilaHandler struct {
-	// .... mas não sei o que colocar aqui :,)
+	db *sql.DB
 }
 
 func NewFilaHandler(database *sql.DB) *FilaHandler {
-	return &FilaHandler{}
+	return &FilaHandler{db: database}
 }
 
 func (h FilaHandler) CriarEntrada(c fiber.Ctx) error {

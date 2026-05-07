@@ -7,11 +7,11 @@ import (
 )
 
 type MotoristaHandler struct {
-	// .... mas não sei o que colocar aqui :,)
+	db *sql.DB
 }
 
 func NewMotoristaHandler(database *sql.DB) *MotoristaHandler {
-	return &MotoristaHandler{}
+	return &MotoristaHandler{db: database}
 }
 
 func (h MotoristaHandler) Buscar(c fiber.Ctx) error {

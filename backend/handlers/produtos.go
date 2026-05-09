@@ -17,8 +17,8 @@ func NewProdutoHandler(database *sql.DB) *ProdutoHandler {
 }
 
 func (h ProdutoHandler) Listar(c fiber.Ctx) error {
-	sql := "SELECT id, nome FROM produtos"
-	rows, err := h.db.Query(sql)
+	query := "SELECT id, nome FROM produtos"
+	rows, err := h.db.Query(query)
 	if err != nil {
 		log.Printf("[ERROR] Query failed: %v", err)
 		return c.Status(500).JSON(fiber.Map{"error": "Não foi possível buscar os produtos no momento."})

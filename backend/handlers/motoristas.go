@@ -5,6 +5,7 @@ import (
 	"log"
 	"fuel-terminal/models"
 	"regexp"
+	"strings"
 
 	"github.com/gofiber/fiber/v3"
 )
@@ -19,13 +20,13 @@ func NewMotoristaHandler(database *sql.DB) *MotoristaHandler {
 
 var (
 	cpfRegex   = regexp.MustCompile(`[^0-9]`)
-	placaRegex = regexp.MustCompile(`[^a-zA-Z0-9]`)
+	placaRegex = regexp.MustCompile(`[^A-Z0-9]`)
 )
 
 func (h MotoristaHandler) Buscar(c fiber.Ctx) error {
 
 	cpf := c.Query("cpf")
-	placa := c.Query("placa")
+	placa := strings.ToUpper(c.Query("placa"))
 
 	if cpf == "" && placa == "" {
 		return c.Status(400).JSON(fiber.Map{

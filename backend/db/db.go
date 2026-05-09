@@ -47,6 +47,7 @@ func Migrate(db *sql.DB) error {
 			cnh        CHAR(9) UNIQUE NOT NULL,
 			placa      CHAR(7) UNIQUE NOT NULL,
 			created_at TIMESTAMP DEFAULT NOW()
+			CONSTRAINT check_placa_uppercase CHECK (placa = UPPER(placa))
 		);
 
 		CREATE TABLE IF NOT EXISTS produtos (

@@ -1,4 +1,7 @@
 BACKEND:
+    - conferir status codes 
+        - implementar status' do fiber? (fiber.StatusOK, fiber.StatusBadRequest,....)
+
     - handlers/motoristas.go: 
         - quebrar a funçao "Buscar"? (separar a busca de cpf e placa) -> a funçao faz tudo dentro dela
 

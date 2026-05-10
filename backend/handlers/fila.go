@@ -3,6 +3,7 @@ package handlers
 import (
 	"database/sql"
 	"log"
+	"fuel-terminal/models"
 
 	"github.com/gofiber/fiber/v3"
 )
@@ -87,7 +88,23 @@ func (h FilaHandler) ListarEntradas(c fiber.Ctx) error {
 }
 
 func (h FilaHandler) BuscarEntrada(c fiber.Ctx) error {
-	return c.SendString("Retorna os detalhes de uma entrada específica")
+
+	entradaID := fiber.Params[int](c, "id")
+	if entradaID == 0 {
+		return c.Status(400).JSON(fiber.Map{"error": "O ID da entrada é obrigatório e deve ser um número inteiro"})
+	}
+
+	var e models.EntradaFila
+
+	query := `SELECT id, motorista_id, produto_id, status, horario_chegada, inicio_carregamento, fim_carregamento FROM entradas_fila WHERE id = $1`
+	if err := h.db.QueryRow(query, entradaID).Scan(&e.ID, &e.MotoristaID, &e.ProdutoID, &e.Status, &e.HorarioChegada, &e.InicioCarregamento, &e.FimCarregamento); err != nil {
+		if err == sql.ErrNoRows {
+			return c.Status(404).JSON(fiber.Map{"error": "Entrada não encontrada"})
+		}
+		return c.Status(500).JSON(fiber.Map{"error": "Erro ao buscar entrada"})
+	}
+
+	return c.JSON(e)
 }
 
 func (h FilaHandler) Historico(c fiber.Ctx) error {

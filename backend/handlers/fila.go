@@ -27,6 +27,7 @@ type criarEntradaRequest struct {
 func (h FilaHandler) CriarEntrada(c fiber.Ctx) error {
 	var req criarEntradaRequest
 	if err := c.Bind().Body(&req); err != nil {
+		log.Printf("[ERROR] Failed to parse request body: %v", err)
 		return c.Status(400).JSON(fiber.Map{"error": "Erro ao processar os dados fornecidos"})
 	}
 
@@ -48,6 +49,7 @@ func (h FilaHandler) CriarEntrada(c fiber.Ctx) error {
 		RETURNING id
 	`, req.Nome, req.CPF, req.CNH, req.Placa).Scan(&motoristaID)
 	if err != nil {
+		log.Printf("[ERROR] Failed to insert or update motorista: %v", err)
 		return c.Status(500).JSON(fiber.Map{"error": "Erro ao cadastrar ou atualizar motorista"})
 	}
 
@@ -57,6 +59,7 @@ func (h FilaHandler) CriarEntrada(c fiber.Ctx) error {
 		SELECT COUNT(*) FROM entradas_fila
 		WHERE motorista_id = $1 AND status IN ('AGUARDANDO', 'CARREGANDO')
 	`, motoristaID).Scan(&count); err != nil {
+		log.Printf("[ERROR] Scan failed: %v", err)
 		return c.Status(500).JSON(fiber.Map{"error": "Erro ao verificar entradas ativas do motorista"})
 	}
 	if count > 0 {
@@ -70,6 +73,7 @@ func (h FilaHandler) CriarEntrada(c fiber.Ctx) error {
 		VALUES ($1, $2, 'AGUARDANDO', NOW())
 		RETURNING id
 	`, motoristaID, req.ProdutoID).Scan(&entradaID); err != nil {
+		log.Printf("[ERROR] Failed to create fila entry: %v", err)
 		return c.Status(500).JSON(fiber.Map{"error": "Erro ao criar entrada na fila"})
 	}
 
@@ -88,6 +92,7 @@ func (h FilaHandler) ListarEntradas(c fiber.Ctx) error {
 
 	rows, err := h.db.Query(query)
 	if err != nil {
+		log.Printf("[ERROR] Query failed: %v", err)
 		return c.Status(500).JSON(fiber.Map{"error": "Erro ao consultar entradas da fila"})
 	}
 	defer rows.Close()
@@ -126,6 +131,7 @@ func (h FilaHandler) BuscarEntrada(c fiber.Ctx) error {
 		if err == sql.ErrNoRows {
 			return c.Status(404).JSON(fiber.Map{"error": "Entrada não encontrada"})
 		}
+		log.Printf("[ERROR] Scan failed: %v", err)
 		return c.Status(500).JSON(fiber.Map{"error": "Erro ao buscar entrada"})
 	}
 
@@ -137,6 +143,7 @@ func (h FilaHandler) Historico(c fiber.Ctx) error {
 
 	rows, err := h.db.Query(query)
 	if err != nil {
+		log.Printf("[ERROR] Query failed: %v", err)
 		return c.Status(500).JSON(fiber.Map{"error": "Erro ao consultar histórico de entradas"})
 	}
 	defer rows.Close()

@@ -191,7 +191,7 @@ func (h FilaHandler) BuscarEntrada(c fiber.Ctx) error {
 	return c.JSON(e)
 }
 
-func (h FilaHandler) Historico(c fiber.Ctx) error {
+func (h FilaHandler) ListarHistorico(c fiber.Ctx) error {
 	query := `SELECT id, motorista_id, produto_id, status, horario_chegada, inicio_carregamento, fim_carregamento FROM entradas_fila WHERE horario_chegada < CURRENT_DATE AND status in ('FINALIZADO', 'CANCELADO') ORDER BY horario_chegada DESC`
 
 	rows, err := h.db.Query(query)

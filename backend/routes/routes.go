@@ -21,7 +21,7 @@ func SetupRoutes(app *fiber.App, database *sql.DB) {
 	api.Get("/motoristas/busca", motorista.Buscar)
 
 	// Fila
-	api.Get("/fila/historico", fila.Historico)
+	api.Get("/fila/historico", fila.ListarHistorico)
 	api.Get("/fila/:id", fila.BuscarEntrada)
 	api.Get("/fila", fila.ListarEntradas)
 	api.Patch("/fila/:id/status", fila.AtualizarStatus)

@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"log"
 	"fuel-terminal/models"
+	"strings"
 
 	"github.com/gofiber/fiber/v3"
 )
@@ -84,7 +85,59 @@ func (h FilaHandler) CriarEntrada(c fiber.Ctx) error {
 }
 
 func (h FilaHandler) AtualizarStatus(c fiber.Ctx) error {
-	return c.SendString("Atualiza o status de uma entrada na fila")
+
+	id := fiber.Params[int](c, "id")
+	if id == 0 {
+		return c.Status(400).JSON(fiber.Map{"error": "O ID da entrada é obrigatório e deve ser um número inteiro"})
+	}
+
+	var reqBody struct {
+		StatusNovo models.Status `json:"status_novo"`
+	}
+	if err := c.Bind().Body(&reqBody); err != nil {
+		log.Printf("[ERROR] Failed to parse request body: %v", err)
+		return c.Status(400).JSON(fiber.Map{"error": "Erro ao processar os dados fornecidos pela requisição"})
+	}
+
+	reqBody.StatusNovo = models.Status(strings.ToUpper(string(reqBody.StatusNovo)))
+
+	if !reqBody.StatusNovo.IsStatusValido() {
+		log.Printf("[ERROR] Invalid status: %v", reqBody.StatusNovo)
+		return c.Status(400).JSON(fiber.Map{"error": "O Status fornecido é inválido"})
+	}
+
+	var statusAtual models.Status
+	err := h.db.QueryRow(`SELECT status FROM entradas_fila WHERE id = $1`, id).Scan(&statusAtual)
+	if err == sql.ErrNoRows {
+		return c.Status(404).JSON(fiber.Map{"error": "Entrada não encontrada"})
+	}
+	if err != nil {
+		log.Printf("[ERROR] Failed to query current status: %v", err)
+		return c.Status(500).JSON(fiber.Map{"error": "Erro ao consultar entrada"})
+	}
+
+	if !statusAtual.PodeTrocar(reqBody.StatusNovo) {
+		return c.Status(400).JSON(fiber.Map{"error": "Transição de status inválida"})
+	}
+
+	var updateQuery string
+	switch reqBody.StatusNovo {
+	case models.StatusCarregando:
+		updateQuery = `UPDATE entradas_fila SET status = $1, inicio_carregamento = NOW() WHERE id = $2`
+	case models.StatusFinalizado:
+		updateQuery = `UPDATE entradas_fila SET status = $1, fim_carregamento = NOW() WHERE id = $2`
+	default:
+		// cancelado
+		updateQuery = `UPDATE entradas_fila SET status = $1 WHERE id = $2`
+	}
+
+	_, err = h.db.Exec(updateQuery, reqBody.StatusNovo, id)
+	if err != nil {
+		log.Printf("[ERROR] Failed to update status: %v", err)
+		return c.Status(500).JSON(fiber.Map{"error": "Erro ao atualizar status da entrada"})
+	}
+
+	return c.JSON(fiber.Map{"message": "Status atualizado com sucesso"})
 }
 
 func (h FilaHandler) ListarEntradas(c fiber.Ctx) error {

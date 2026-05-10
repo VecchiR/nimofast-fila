@@ -13,6 +13,23 @@ const (
 	StatusCancelado  Status = "CANCELADO"
 )
 
+func (atual Status) PodeTrocar(novo Status) bool {
+	switch atual {
+	case StatusAguardando:
+		return novo == StatusCarregando || novo == StatusCancelado
+	case StatusCarregando:
+		return novo == StatusFinalizado || novo == StatusCancelado
+	case StatusFinalizado, StatusCancelado:
+		return false
+	default:
+		return false
+	}
+}
+
+func (atual Status) IsStatusValido() bool {
+	return atual == StatusAguardando || atual == StatusCarregando || atual == StatusFinalizado || atual == StatusCancelado
+}
+
 type Motorista struct {
 	ID    int    `json:"id"`
 	Nome  string `json:"nome"`

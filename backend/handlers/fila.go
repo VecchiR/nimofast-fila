@@ -133,5 +133,29 @@ func (h FilaHandler) BuscarEntrada(c fiber.Ctx) error {
 }
 
 func (h FilaHandler) Historico(c fiber.Ctx) error {
-	return c.SendString("Lista entradas finalizadas e canceladas (dias anteriores)")
+	query := `SELECT id, motorista_id, produto_id, status, horario_chegada, inicio_carregamento, fim_carregamento FROM entradas_fila WHERE horario_chegada < CURRENT_DATE AND status in ('FINALIZADO', 'CANCELADO') ORDER BY horario_chegada DESC`
+
+	rows, err := h.db.Query(query)
+	if err != nil {
+		return c.Status(500).JSON(fiber.Map{"error": "Erro ao consultar histórico de entradas"})
+	}
+	defer rows.Close()
+
+	entradas := make([]models.EntradaFila, 0)
+	for rows.Next() {
+		var e models.EntradaFila
+		if err := rows.Scan(&e.ID, &e.MotoristaID, &e.ProdutoID, &e.Status, &e.HorarioChegada, &e.InicioCarregamento, &e.FimCarregamento); err != nil {
+			log.Printf("[ERROR] Scan failed: %v", err)
+			return c.Status(500).JSON(fiber.Map{"error": "Erro ao processar histórico de entradas"})
+		}
+		entradas = append(entradas, e)
+	}
+
+	err = rows.Err()
+	if err != nil {
+		log.Printf("[ERROR] Row iteration failed: %v", err)
+		return c.Status(500).JSON(fiber.Map{"error": "Erro ao buscar histórico de entradas devido a uma falha de conexão"})
+	}
+
+	return c.JSON(entradas)
 }

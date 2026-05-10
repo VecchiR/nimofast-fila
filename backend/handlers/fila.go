@@ -84,7 +84,32 @@ func (h FilaHandler) AtualizarStatus(c fiber.Ctx) error {
 }
 
 func (h FilaHandler) ListarEntradas(c fiber.Ctx) error {
-	return c.SendString("Lista todos os motoristas na fila do dia, ordenados por chegada")
+	query := `SELECT id, motorista_id, produto_id, status, horario_chegada, inicio_carregamento, fim_carregamento FROM entradas_fila WHERE horario_chegada >= CURRENT_DATE ORDER BY horario_chegada ASC`
+
+	rows, err := h.db.Query(query)
+	if err != nil {
+		return c.Status(500).JSON(fiber.Map{"error": "Erro ao consultar entradas da fila"})
+	}
+	defer rows.Close()
+
+	entradas := make([]models.EntradaFila, 0)
+	for rows.Next() {
+		var e models.EntradaFila
+		if err := rows.Scan(&e.ID, &e.MotoristaID, &e.ProdutoID, &e.Status, &e.HorarioChegada, &e.InicioCarregamento, &e.FimCarregamento); err != nil {
+			log.Printf("[ERROR] Scan failed: %v", err)
+			return c.Status(500).JSON(fiber.Map{"error": "Erro ao processar entradas da fila"})
+		}
+		entradas = append(entradas, e)
+	}
+
+	err = rows.Err()
+	if err != nil {
+		log.Printf("[ERROR] Row iteration failed: %v", err)
+		return c.Status(500).JSON(fiber.Map{"error": "Erro ao buscar entradas da fila devido a uma falha de conexão"})
+	}
+
+	return c.JSON(entradas)
+
 }
 
 func (h FilaHandler) BuscarEntrada(c fiber.Ctx) error {

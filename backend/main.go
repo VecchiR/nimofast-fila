@@ -23,5 +23,9 @@ func main() {
 	app := fiber.New()
 
 	routes.SetupRoutes(app, database)
-	app.Listen(":3000")
+	err = app.Listen(":8080")
+	if err != nil {
+		log.Fatal(err)
+	}
+
 }

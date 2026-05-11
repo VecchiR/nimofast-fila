@@ -45,7 +45,6 @@ func (h FilaHandler) CriarEntrada(c fiber.Ctx) error {
 		VALUES ($1, $2, $3, UPPER($4))
 		ON CONFLICT (cpf) DO UPDATE SET
 			nome = EXCLUDED.nome,
-			cnh = EXCLUDED.cnh,
 			placa = EXCLUDED.placa
 		RETURNING id
 	`, req.Nome, req.CPF, req.CNH, req.Placa).Scan(&motoristaID)

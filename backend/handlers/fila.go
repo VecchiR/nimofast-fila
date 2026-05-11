@@ -38,14 +38,35 @@ func (h FilaHandler) CriarEntrada(c fiber.Ctx) error {
 		return c.Status(400).JSON(fiber.Map{"error": "É necessário fornecer todos os campos: nome, cpf, cnh, placa e produto_id"})
 	}
 
+	// checar se existe um motorista com o cpf, cnh ou placa fornecidos -> se existir, verificar se os dados TODOS os dados UNIQUE fornecidos (cpf, cnh e placa) correspondem aos dados existentes para esse motorista
+	motoristaExistente := models.Motorista{}
+	err := h.db.QueryRow(`SELECT id, nome, cpf, cnh, placa FROM motoristas WHERE cpf = $1 OR cnh = $2 OR placa = UPPER($3)`, req.CPF, req.CNH, req.Placa).Scan(&motoristaExistente.ID, &motoristaExistente.Nome, &motoristaExistente.CPF, &motoristaExistente.CNH, &motoristaExistente.Placa)
+	if err != nil && err != sql.ErrNoRows {
+		log.Printf("[ERROR] Failed to query existing motorista: %v", err)
+		return c.Status(500).JSON(fiber.Map{"error": "Erro ao verificar se motorista já existe"})
+	}
+	if err == nil { // encontrou motorista -> verificar se os dados estão certos
+		if motoristaExistente.CPF != req.CPF || motoristaExistente.CNH != req.CNH || motoristaExistente.Placa != strings.ToUpper(req.Placa) {
+			var campoBateu string
+			switch {
+			case motoristaExistente.CPF == req.CPF:
+				campoBateu = "CPF"
+			case motoristaExistente.CNH == req.CNH:
+				campoBateu = "CNH"
+			case motoristaExistente.Placa == strings.ToUpper(req.Placa):
+				campoBateu = "placa"
+			}
+			return c.Status(400).JSON(fiber.Map{"error": "Um motorista com este(a) " + campoBateu + " já existe, mas há divergência nos outros dados fornecidos"})
+		}
+	}
+
 	// Criar ou atualizar os dados do motorista
 	var motoristaID int
-	err := h.db.QueryRow(`
+	err = h.db.QueryRow(`
 		INSERT INTO motoristas (nome, cpf, cnh, placa)
 		VALUES ($1, $2, $3, UPPER($4))
 		ON CONFLICT (cpf) DO UPDATE SET
-			nome = EXCLUDED.nome,
-			placa = EXCLUDED.placa
+			nome = EXCLUDED.nome
 		RETURNING id
 	`, req.Nome, req.CPF, req.CNH, req.Placa).Scan(&motoristaID)
 	if err != nil {

@@ -161,7 +161,18 @@ func (h FilaHandler) AtualizarStatus(c fiber.Ctx) error {
 }
 
 func (h FilaHandler) ListarEntradas(c fiber.Ctx) error {
-	query := `SELECT id, motorista_id, produto_id, status, horario_chegada, inicio_carregamento, fim_carregamento FROM entradas_fila WHERE horario_chegada >= CURRENT_DATE ORDER BY horario_chegada ASC`
+	query := `
+		SELECT 
+			ef.id, ef.status, ef.horario_chegada, ef.inicio_carregamento, ef.fim_carregamento,
+			m.id, m.nome, m.cpf, m.cnh, m.placa,
+			p.id, p.nome
+		FROM entradas_fila ef
+		INNER JOIN motoristas m ON ef.motorista_id = m.id
+		INNER JOIN produtos p ON ef.produto_id = p.id 
+		WHERE ef.horario_chegada >= CURRENT_DATE 
+			AND ef.status IN ('AGUARDANDO', 'CARREGANDO')
+		ORDER BY ef.horario_chegada ASC
+	`
 
 	rows, err := h.db.Query(query)
 	if err != nil {
@@ -173,10 +184,20 @@ func (h FilaHandler) ListarEntradas(c fiber.Ctx) error {
 	entradas := make([]models.EntradaFila, 0)
 	for rows.Next() {
 		var e models.EntradaFila
-		if err := rows.Scan(&e.ID, &e.MotoristaID, &e.ProdutoID, &e.Status, &e.HorarioChegada, &e.InicioCarregamento, &e.FimCarregamento); err != nil {
+		var m models.Motorista
+		var p models.Produto
+		if err := rows.Scan(
+			&e.ID, &e.Status, &e.HorarioChegada, &e.InicioCarregamento, &e.FimCarregamento,
+			&m.ID, &m.Nome, &m.CPF, &m.CNH, &m.Placa,
+			&p.ID, &p.Nome,
+		); err != nil {
 			log.Printf("[ERROR] Scan failed: %v", err)
 			return c.Status(500).JSON(fiber.Map{"error": "Erro ao processar entradas da fila"})
 		}
+		e.MotoristaID = m.ID
+		e.ProdutoID = p.ID
+		e.Motorista = &m
+		e.Produto = &p
 		entradas = append(entradas, e)
 	}
 

@@ -1,7 +1,7 @@
 # Nimofast - Sistema de Fila de Carregamento de Combustível
 
 ## Diário do projeto
-Optei por disponibilizar minhas notas que utilizo conforme faço um projeto em que tenho que estudar coisas novas. O "diário do projeto" está em "diario_de_projeto.pdf"
+Optei por disponibilizar minhas notas que utilizo conforme faço um projeto em que tenho que estudar coisas novas. O "diário do projeto" está disponível na raíz do projeto e no github em [diario_de_projeto.pdf](https://github.com/VecchiR/fuel-terminal/blob/main/diario_de_projeto.pdf)
 
 
 ## Instruções para rodar o projeto

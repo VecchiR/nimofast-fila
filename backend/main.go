@@ -4,6 +4,7 @@ import (
 	"log"
 	"fuel-terminal/db"
 	"fuel-terminal/routes"
+	"os"
 
 	"github.com/gofiber/fiber/v3"
 	"github.com/gofiber/fiber/v3/middleware/cors"
@@ -24,11 +25,22 @@ func main() {
 	app := fiber.New()
 
 	cfg := cors.ConfigDefault
-	cfg.AllowOrigins = []string{"http://localhost:3000"}
+	frontendURL := os.Getenv("FRONTEND_URL")
+	if frontendURL == "" {
+		frontendURL = "http://localhost:3000"
+	}
+	cfg.AllowOrigins = []string{frontendURL}
 	app.Use(cors.New(cfg))
 
 	routes.SetupRoutes(app, database)
-	err = app.Listen(":8080")
+
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080"
+	}
+	addr := ":" + port
+	log.Println("Iniciando server em ", addr)
+	err = app.Listen(addr)
 	if err != nil {
 		log.Fatal(err)
 	}

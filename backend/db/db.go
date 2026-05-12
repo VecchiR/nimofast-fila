@@ -3,6 +3,8 @@ package db
 import (
 	"database/sql"
 	"log"
+	"os"
+	"strconv"
 	"time"
 
 	"github.com/lib/pq"
@@ -10,13 +12,40 @@ import (
 )
 
 func Connect() (*sql.DB, error) {
-	// Capture connection properties.
+	// usa variáveis do env
+	// se não tiver, usa valores default
+	host := os.Getenv("DB_HOST")
+	if host == "" {
+		host = "localhost"
+	}
+
+	portStr := os.Getenv("DB_PORT")
+	if portStr == "" {
+		portStr = "5433"
+	}
+	port, _ := strconv.Atoi(portStr)
+
+	user := os.Getenv("DB_USER")
+	if user == "" {
+		user = "postgres"
+	}
+
+	password := os.Getenv("DB_PASSWORD")
+	if password == "" {
+		password = "postgres"
+	}
+
+	database := os.Getenv("DB_NAME")
+	if database == "" {
+		database = "fuel_terminal"
+	}
+
 	cfg := pq.Config{
-		Host:           "localhost",
-		Port:           5433,
-		User:           "postgres",
-		Password:       "postgres",
-		Database:       "fuel_terminal",
+		Host:           host,
+		Port:           uint16(port),
+		User:           user,
+		Password:       password,
+		Database:       database,
 		ConnectTimeout: time.Second * 10,
 		SSLMode:        "disable",
 	}

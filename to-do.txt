@@ -7,3 +7,6 @@ BACKEND:
 
     - db e models: 
         - ter uma tabela de "veículos", e na tabela de "motoristas" trocar a coluna "placa" por um link com veículos, permitindo que um motorista vincule diferentes veículos, e salvar o id do veiculo na entrada, assim como o id do motorista
+
+
+Implementar POLLING com período configurável!

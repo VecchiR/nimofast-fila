@@ -1,6 +1,6 @@
 # Nimofast - Sistema de Fila de Carregamento de Combustível
 
-# Diário do projeto
+## Diário do projeto
 Optei por disponibilizar minhas notas que utilizo conforme faço um projeto em que tenho que estudar coisas novas. O "diário do projeto" está em "diario_de_projeto.pdf"
 
 

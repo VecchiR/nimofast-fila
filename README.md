@@ -17,13 +17,13 @@ Após clonar o repositório, inicie um terminal **na raíz do projeto** e execut
 
 ```bash
 # para iniciar todos os serviços
-make fullstack-up
+npm run fullstack-up
 
-# para encerrar os serviços
-make stop
+# para encerrar serviços do docker (backend + banco)
+npm run stop
 ```
 
-O comando `make fullstack-up` é equivalente a:
+O comando `npm run fullstack-up` é equivalente a:
 ```bash
 # sobe o banco de dados e o backend
 docker compose up -d

@@ -1,0 +1,38 @@
+# Go-specific ignores
+/vendor/
+/bin/
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Build artifacts
+build/
+dist/
+*.out
+*.test
+
+# Git and VCS
+.git/
+.gitignore
+
+# Environment variables and secrets
+.env
+.env.local
+.env.*.local
+*.pem
+*.key
+
+# PostgreSQL/Data/Local DB
+/data/
+/pgdata/
+dump.sql
+*.log
+
+# Docker and IDE
+Dockerfile
+.dockerignore
+.vscode/
+.idea/
+.DS_Store

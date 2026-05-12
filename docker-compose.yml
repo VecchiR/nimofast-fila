@@ -1,0 +1,52 @@
+# https://docs.docker.com/compose/gettingstarted/
+
+services:
+  postgres: # https://hub.docker.com/_/postgres
+    # usa imagem pronta do postgres e lê as variáveis de ambiente para configurar o banco
+    image: postgres:17-alpine 
+    # OBSERVAÇÕES: 
+    ## A versão 17 foi escolhida porque apesar de a última versão estável ser a 18, ela é recente e implementou algumas mudanças de comportamento (ex: PGDATA e caminho dos volumes), e a grande maioria dos tutoriais ainda não foram atualizados 
+    ## Alpine porque é mais leve que a imagem debian padrão
+    container_name: fuel_terminal_postgres
+    environment: 
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: fuel_terminal
+    ports:
+      - "5433:5432"
+    volumes: # dados do banco são persistentes
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck: # checa se o banco está pronto para evitar que o backend suba antes disso
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks: # rede que serve de comunicação entre os containers
+      - fuel_terminal_network
+
+  backend:
+    build: # usa a imagem configurada pelo Dockerfile que está em ./backend
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: fuel_terminal_backend
+    environment: # configuração para conversar com o banco
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+      DB_NAME: fuel_terminal
+    ports:
+      - "8080:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy # backend só sobre depois que o banco estiver pronto
+    networks:
+      - fuel_terminal_network
+
+volumes:
+  # mencionado lá no postgres:volumes (serve para a persistência dos dados)
+  postgres_data:
+
+networks: # docker compose já cria uma rede bridge para a comunicação entre os serviços, então nem precisaria dessa parte e nem nos campos "networks" nos serviços. Deixei explícito por escolha. 
+  fuel_terminal_network:
+    driver: bridge

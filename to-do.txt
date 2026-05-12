@@ -8,5 +8,9 @@ BACKEND:
     - db e models: 
         - ter uma tabela de "veículos", e na tabela de "motoristas" trocar a coluna "placa" por um link com veículos, permitindo que um motorista vincule diferentes veículos, e salvar o id do veiculo na entrada, assim como o id do motorista
 
+- validação modelos de placa LLLNNNN ou LLLNLNN (L= LETRA, N= NUMERO)
+    - MAS É DIFERENTE DEPENDENDO DO PAIS DO MERCOSUL..... (argentina = LLNNNLL)
+        - MAS não importa nesse projeto pq o motorista tem que ter CPF e CNH....
+
 
 Implementar POLLING com período configurável!

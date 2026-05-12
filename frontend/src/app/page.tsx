@@ -2,10 +2,11 @@
 
 import { useEffect, useState } from 'react';
 import { listarEntradas, listarProdutos } from '@/lib/api';
+import { EntradaFila, Produto } from '@/types';
 
 export default function PainelFila() {
-  const [produtos, setProdutos] = useState<any[]>([]);
-  const [fila, setFila] = useState<any[]>([]);
+  const [produtos, setProdutos] = useState<Produto[]>([]);
+  const [fila, setFila] = useState<EntradaFila[]>([]);
 
   useEffect(() => {
     async function fetchProdutos() {
@@ -32,8 +33,10 @@ export default function PainelFila() {
   }, []);
 
   return (
-    <div>
-      <h1 className="text-2xl font-bold mb-4">Painel</h1>
+    <div className='flex flex-col gap-4'>
+      <h1 className="text-2xl font-bold">Painel</h1>
+
+      <a href="/criar_entrada"className='self-start bg-blue-300 p-2'>+ Nova Entrada</a>
 
       {fila.length === 0 ? (
         <p className="text-gray-500">Fila vazia.</p>

@@ -40,6 +40,10 @@ useEffect(() => {
     <div className="flex flex-col gap-4">
       <h1 className="text-2xl font-bold">Painel</h1>
 
+      <Link href="/historico" className="self-start bg-blue-300 p-2">
+        Histórico
+      </Link>
+
       <Link href="/criar_entrada" className="self-start bg-blue-300 p-2">
         + Nova Entrada
       </Link>

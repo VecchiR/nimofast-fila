@@ -31,6 +31,10 @@ export async function listarEntradas(): Promise<EntradaFila[]> {
   return fetcher(`/fila`);
 }
 
+export async function listarHistorico(): Promise<EntradaFila[]> {
+  return fetcher(`/fila/historico`);
+}
+
 export function criarEntrada(formData: CriarEntradaFormData) {
   return fetcher('/fila', {
     method: 'POST',

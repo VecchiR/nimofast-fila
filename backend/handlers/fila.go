@@ -25,6 +25,57 @@ type criarEntradaRequest struct {
 	ProdutoID int    `json:"produto_id"`
 }
 
+const sqlSelectEntradas = `		
+		SELECT 
+			ef.id, ef.status, ef.horario_chegada, ef.inicio_carregamento, ef.fim_carregamento,
+			m.id, m.nome, m.cpf, m.cnh, m.placa,
+			p.id, p.nome
+		FROM entradas_fila ef
+		INNER JOIN motoristas m ON ef.motorista_id = m.id
+		INNER JOIN produtos p ON ef.produto_id = p.id `
+
+func scanEntradas(rows *sql.Rows) ([]models.EntradaFila, error) {
+	defer rows.Close()
+
+	entradas := make([]models.EntradaFila, 0)
+
+	for rows.Next() {
+		var e models.EntradaFila
+		var m models.Motorista
+		var p models.Produto
+
+		if err := rows.Scan(
+			&e.ID,
+			&e.Status,
+			&e.HorarioChegada,
+			&e.InicioCarregamento,
+			&e.FimCarregamento,
+			&m.ID,
+			&m.Nome,
+			&m.CPF,
+			&m.CNH,
+			&m.Placa,
+			&p.ID,
+			&p.Nome,
+		); err != nil {
+			return nil, err
+		}
+
+		e.MotoristaID = m.ID
+		e.ProdutoID = p.ID
+		e.Motorista = &m
+		e.Produto = &p
+
+		entradas = append(entradas, e)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return entradas, nil
+}
+
 func (h FilaHandler) CriarEntrada(c fiber.Ctx) error {
 	var req criarEntradaRequest
 	if err := c.Bind().Body(&req); err != nil {
@@ -161,14 +212,7 @@ func (h FilaHandler) AtualizarStatus(c fiber.Ctx) error {
 }
 
 func (h FilaHandler) ListarEntradas(c fiber.Ctx) error {
-	query := `
-		SELECT 
-			ef.id, ef.status, ef.horario_chegada, ef.inicio_carregamento, ef.fim_carregamento,
-			m.id, m.nome, m.cpf, m.cnh, m.placa,
-			p.id, p.nome
-		FROM entradas_fila ef
-		INNER JOIN motoristas m ON ef.motorista_id = m.id
-		INNER JOIN produtos p ON ef.produto_id = p.id 
+	query := sqlSelectEntradas + ` 
 		WHERE ef.status IN ('AGUARDANDO', 'CARREGANDO')
 		ORDER BY ef.horario_chegada ASC
 	`
@@ -180,24 +224,10 @@ func (h FilaHandler) ListarEntradas(c fiber.Ctx) error {
 	}
 	defer rows.Close()
 
-	entradas := make([]models.EntradaFila, 0)
-	for rows.Next() {
-		var e models.EntradaFila
-		var m models.Motorista
-		var p models.Produto
-		if err := rows.Scan(
-			&e.ID, &e.Status, &e.HorarioChegada, &e.InicioCarregamento, &e.FimCarregamento,
-			&m.ID, &m.Nome, &m.CPF, &m.CNH, &m.Placa,
-			&p.ID, &p.Nome,
-		); err != nil {
-			log.Printf("[ERROR] Scan failed: %v", err)
-			return c.Status(500).JSON(fiber.Map{"error": "Erro ao processar entradas da fila"})
-		}
-		e.MotoristaID = m.ID
-		e.ProdutoID = p.ID
-		e.Motorista = &m
-		e.Produto = &p
-		entradas = append(entradas, e)
+	entradas, err := scanEntradas(rows)
+	if err != nil {
+		log.Printf("[ERROR] Scan failed: %v", err)
+		return c.Status(500).JSON(fiber.Map{"error": "Erro ao processar entradas da fila"})
 	}
 
 	err = rows.Err()
@@ -232,7 +262,7 @@ func (h FilaHandler) BuscarEntrada(c fiber.Ctx) error {
 }
 
 func (h FilaHandler) ListarHistorico(c fiber.Ctx) error {
-	query := `SELECT id, motorista_id, produto_id, status, horario_chegada, inicio_carregamento, fim_carregamento FROM entradas_fila WHERE horario_chegada < CURRENT_DATE AND status in ('FINALIZADO', 'CANCELADO') ORDER BY horario_chegada DESC`
+	query := sqlSelectEntradas + `WHERE ef.horario_chegada < CURRENT_DATE AND ef.status in ('FINALIZADO', 'CANCELADO') ORDER BY ef.horario_chegada DESC`
 
 	rows, err := h.db.Query(query)
 	if err != nil {
@@ -241,14 +271,10 @@ func (h FilaHandler) ListarHistorico(c fiber.Ctx) error {
 	}
 	defer rows.Close()
 
-	entradas := make([]models.EntradaFila, 0)
-	for rows.Next() {
-		var e models.EntradaFila
-		if err := rows.Scan(&e.ID, &e.MotoristaID, &e.ProdutoID, &e.Status, &e.HorarioChegada, &e.InicioCarregamento, &e.FimCarregamento); err != nil {
-			log.Printf("[ERROR] Scan failed: %v", err)
-			return c.Status(500).JSON(fiber.Map{"error": "Erro ao processar histórico de entradas"})
-		}
-		entradas = append(entradas, e)
+	entradas, err := scanEntradas(rows)
+	if err != nil {
+		log.Printf("[ERROR] Scan failed: %v", err)
+		return c.Status(500).JSON(fiber.Map{"error": "Erro ao processar entradas do histórico"})
 	}
 
 	err = rows.Err()

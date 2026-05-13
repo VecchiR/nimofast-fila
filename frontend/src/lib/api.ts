@@ -37,3 +37,12 @@ export function criarEntrada(formData: CriarEntradaFormData) {
     body: JSON.stringify(formData),
   })
 }
+
+export function atualizarStatus(id: number, status_novo: string) {
+  console.log('id>',id)
+  console.log('status: ', status_novo)
+  return fetcher(`/fila/${id}/status`, {
+    method: 'PATCH',
+    body: JSON.stringify({ status_novo }),
+  })
+}

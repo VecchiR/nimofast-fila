@@ -121,6 +121,19 @@ NEXT_PUBLIC_API_URL=http://localhost:8080
     
     Essa é uma simplificação consciente feita de acordo com o briefing do projeto. Um modelo mais fiel ao mundo real separaria as entidades MOTORISTA e VEÍCULO, permitindo que um motorista vincule diferentes placas ao longo do tempo e que o id do veículo seja registrado em cada entrada da fila, preservando o histórico de qual caminhão realizou cada carregamento, mesmo que o motorista troque de veículo.
 
+- ### Listagem de entradas na fila sem restringir apenas ao dia atual
+
+    Embora o briefing do projeto mencione que o endpoint `GET /fila` "*lista todos os motoristas na fila do dia*" e a primeira interpretação tenha sido "listar apenas as entradas ativas criadas na data de hoje", foi decidido listar **todas as entradas ativas**, independente da sua data de criação.
+
+    A decisão foi tomada para que a fila não esconda entradas que ainda estejam com status **AGUARDANDO** ou **CARREGANDO** apenas por terem sido criadas em um dia anterior. Essas entradas ainda estão ativas e precisam continuar visíveis para o operador, e não faz sentido que sejam movidas diretamente para o histórico antes de serem encerradas.
+
+    Remover essa restrição evita dois problemas práticos:
+
+    - entradas que possam ter sido esquecidas de um dia para o outro não desaparecem da lista, permitindo que o operador as identifique e trate corretamente;
+    - se a base de carregamento operar ao longo da madrugada, a alteração impede que a virada do dia faça com que as entradas ativas sumam da fila, o que seria um problema para o fluxo da operação.
+
+    Dessa forma, o histórico fica reservado para entradas inativas, e a fila permanece como a visão de tudo que ainda está em andamento.
+
 
 
 ---

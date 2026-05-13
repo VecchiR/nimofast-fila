@@ -169,8 +169,7 @@ func (h FilaHandler) ListarEntradas(c fiber.Ctx) error {
 		FROM entradas_fila ef
 		INNER JOIN motoristas m ON ef.motorista_id = m.id
 		INNER JOIN produtos p ON ef.produto_id = p.id 
-		WHERE ef.horario_chegada >= CURRENT_DATE 
-			AND ef.status IN ('AGUARDANDO', 'CARREGANDO')
+		WHERE ef.status IN ('AGUARDANDO', 'CARREGANDO')
 		ORDER BY ef.horario_chegada ASC
 	`
 

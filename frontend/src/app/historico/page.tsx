@@ -3,6 +3,7 @@
 import { listarHistorico } from '@/lib/api';
 import { EntradaFila } from '@/types';
 import { useEffect, useState } from 'react';
+import StatusBadge from '../../../components/StatusBadge';
 
 export default function Historico() {
   const [historico, setHistorico] = useState<EntradaFila[]>([]);
@@ -48,7 +49,9 @@ export default function Historico() {
                 <td className="p-3">{entrada.motorista.nome}</td>
                 <td className="p-3">{entrada.motorista.placa}</td>
                 <td className="p-3">{entrada.produto.nome}</td>
-                <td className="p-3">{entrada.status}</td>
+                <td className="p-3">
+                  <StatusBadge status={entrada.status}/>
+                </td>
               </tr>
             ))}
           </tbody>

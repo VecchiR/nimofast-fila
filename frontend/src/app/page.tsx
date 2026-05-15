@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react';
 import { atualizarStatus, listarEntradas } from '@/lib/api';
 import { EntradaFila } from '@/types';
 import Link from 'next/link';
+import StatusBadge from '../../components/StatusBadge';
 
 export default function PainelFila() {
   const [fila, setFila] = useState<EntradaFila[]>([]);
@@ -115,7 +116,9 @@ useEffect(() => {
                 <td className="p-3">
                   {calcularTempoEspera(entrada.horario_chegada)}
                 </td>
-                <td className="p-3">{entrada.status}</td>
+                <td className="p-3">
+                  <StatusBadge status={entrada.status}/>
+                </td>
                 <td className="p-3 flex gap-2">
                   {entrada.status === 'AGUARDANDO' && (
                     <button

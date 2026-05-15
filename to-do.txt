@@ -14,3 +14,7 @@ BACKEND:
 
 
 Implementar POLLING com período configurável!
+
+
+historico -> "tempo total na base" e "horario finalização" ->  vai dar pra calcular para o FINALIZADO.... mas CANCELADO não armazenamos horário de finalização (só fim_carregamento)
+    teria que consertar isso na modelagem primeiro

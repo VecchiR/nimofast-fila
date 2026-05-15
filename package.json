@@ -1,7 +1,7 @@
 {
   "private": true,
   "scripts": {
-    "backend:up": "docker compose up -d",
+    "backend:up": "docker compose up -d --build",
     "backend:down": "docker compose down",
     "backend:dev": "cd backend && fiber dev",
     "frontend:install": "npm install --prefix frontend",

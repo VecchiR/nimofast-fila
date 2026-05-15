@@ -13,7 +13,7 @@ export default function Navbar() {
   const pathname = usePathname()
 
   return (
-    <header className="sticky top-0 z-40 border-b ">
+    <header className="sticky top-0 z-40 border-b bg-blue-200 ">
       <nav className="mx-auto flex h-14 max-w-5xl items-center gap-1 px-4 sm:gap-2 sm:px-6">
         <span className="mr-auto pr-4 text-sm font-semibold text-foreground sm:text-base">
           Fuel Terminal

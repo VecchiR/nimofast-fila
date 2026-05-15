@@ -95,6 +95,11 @@ useEffect(() => {
     <div className="flex flex-col gap-4">
       <h1 className="text-2xl font-bold">Painel</h1>
 
+      <StatusCounters
+        fila={fila}
+        statusToCount={["AGUARDANDO","CARREGANDO"]}
+      />
+
       {fila.length === 0 ? (
         <p className="text-gray-500">Fila vazia.</p>
       ) : (

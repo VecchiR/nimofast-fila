@@ -1,4 +1,4 @@
-export type Status = 'AGUARDANDO' | 'CARREGANDO' | 'FINALIZADO' | 'CANCELADO'
+export type Status = "AGUARDANDO" | "CARREGANDO" | "FINALIZADO" | "CANCELADO"
 
 export type Motorista = {
   id: number

@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import { listarHistorico } from '@/lib/api';
-import { EntradaFila } from '@/types';
-import { useEffect, useState } from 'react';
-import StatusBadge from '../../../components/StatusBadge';
+import { listarHistorico } from "@/lib/api";
+import { EntradaFila } from "@/types";
+import { useEffect, useState } from "react";
+import StatusBadge from "../../../components/StatusBadge";
 
 export default function Historico() {
   const [historico, setHistorico] = useState<EntradaFila[]>([]);

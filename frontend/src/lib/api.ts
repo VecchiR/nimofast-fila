@@ -1,13 +1,13 @@
 import type { Motorista, Produto, EntradaFila, CriarEntradaFormData, Status } from "@/types";
 
 
-const BASE_URL = 'http://localhost:8080/api/v1';
+const BASE_URL = "http://localhost:8080/api/v1";
 
 // concentra as chamadas em um helper para deixar mais limpo e tratar de erros em um lugar só
 async function fetcher<T>(endpoint: string, options?: RequestInit): Promise<T> {
   const response = await fetch(`${BASE_URL}${endpoint}`, {
     headers: {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
     },
     ...options,
   });
@@ -24,7 +24,7 @@ async function fetcher<T>(endpoint: string, options?: RequestInit): Promise<T> {
 }
 
 export async function listarProdutos(): Promise<Produto[]>{
-  return fetcher('/produtos')
+  return fetcher("/produtos")
 }
 
 export async function listarEntradas(): Promise<EntradaFila[]> {
@@ -36,17 +36,17 @@ export async function listarHistorico(): Promise<EntradaFila[]> {
 }
 
 export function criarEntrada(formData: CriarEntradaFormData) {
-  return fetcher('/fila', {
-    method: 'POST',
+  return fetcher("/fila", {
+    method: "POST",
     body: JSON.stringify(formData),
   })
 }
 
 export function atualizarStatus(id: number, status_novo: string) {
-  console.log('id>',id)
-  console.log('status: ', status_novo)
+  console.log("id>",id)
+  console.log("status: ", status_novo)
   return fetcher(`/fila/${id}/status`, {
-    method: 'PATCH',
+    method: "PATCH",
     body: JSON.stringify({ status_novo }),
   })
 }

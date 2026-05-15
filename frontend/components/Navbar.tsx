@@ -1,12 +1,12 @@
-'use client'
+"use client"
 
-import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import Link from "next/link"
+import { usePathname } from "next/navigation"
 
 const links = [
-  { href: '/', label: 'Painel' },
-  { href: '/criar_entrada', label: '+ Entrada' },
-  { href: '/historico', label: 'Histórico' },
+  { href: "/", label: "Painel" },
+  { href: "/criar_entrada", label: "+ Entrada" },
+  { href: "/historico", label: "Histórico" },
 ]
 
 export default function Navbar() {
@@ -26,8 +26,8 @@ export default function Navbar() {
               href={href}
               className={`rounded-lg px-3 py-2 text-sm font-medium ${
                 active
-                  ? 'shadow-sm'
-                  : ''
+                  ? "shadow-sm"
+                  : ""
               }`}
             >
               {label}

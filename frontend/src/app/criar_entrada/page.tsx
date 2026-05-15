@@ -1,20 +1,20 @@
-'use client'
+"use client"
 
-import { useEffect, useState } from 'react'
-import { useRouter } from 'next/navigation'
-import { listarProdutos, criarEntrada } from '@/lib/api'
-import { Produto } from '@/types'
+import { useEffect, useState } from "react"
+import { useRouter } from "next/navigation"
+import { listarProdutos, criarEntrada } from "@/lib/api"
+import { Produto } from "@/types"
 
 export default function CriarEntradaPage() {
   const router = useRouter()
 
-  const [nome,      setNome]      = useState('')
-  const [cpf,       setCpf]       = useState('')
-  const [cnh,       setCnh]       = useState('')
-  const [placa,     setPlaca]     = useState('')
+  const [nome,      setNome]      = useState("")
+  const [cpf,       setCpf]       = useState("")
+  const [cnh,       setCnh]       = useState("")
+  const [placa,     setPlaca]     = useState("")
   const [produtoId, setProdutoId] = useState(0)
   const [produtos,  setProdutos]  = useState<Produto[]>([])
-  const [erro,      setErro]      = useState('')
+  const [erro,      setErro]      = useState("")
 
   useEffect(() => {
     listarProdutos().then(setProdutos)
@@ -22,12 +22,12 @@ export default function CriarEntradaPage() {
 
   async function handleSubmit(e: React.SubmitEvent) {
     e.preventDefault()
-    setErro('')
+    setErro("")
     try {
       await criarEntrada({ nome, cpf, cnh, placa, produto_id: produtoId })
-      router.push('/')
+      router.push("/")
     } catch (e) {
-      setErro(e instanceof Error ? e.message : 'Erro ao criar entrada')
+      setErro(e instanceof Error ? e.message : "Erro ao criar entrada")
     }
   }
 

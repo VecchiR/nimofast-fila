@@ -1,17 +1,18 @@
-'use client';
+"use client";
 
-import { format, parseISO, intervalToDuration } from 'date-fns';
-import { ptBR } from 'date-fns/locale';
-import { useEffect, useState } from 'react';
-import { atualizarStatus, listarEntradas } from '@/lib/api';
-import { EntradaFila } from '@/types';
-import Link from 'next/link';
-import StatusBadge from '../../components/StatusBadge';
+import { format, parseISO, intervalToDuration } from "date-fns";
+import { ptBR } from "date-fns/locale";
+import { useEffect, useState } from "react";
+import { atualizarStatus, listarEntradas } from "@/lib/api";
+import { EntradaFila } from "@/types";
+import StatusBadge from "../../components/StatusBadge";
+import StatusCounters from "../../components/StatusCounter";
 
 export default function PainelFila() {
   const [fila, setFila] = useState<EntradaFila[]>([]);
   const [loading, setLoading] = useState(true);
   const [agora, setAgora] = useState<Date | null>(null);
+
 
   async function carregar() {
     try {
@@ -42,29 +43,30 @@ useEffect(() => {
       await atualizarStatus(id, novoStatus);
       await carregar();
     } catch (e) {
-      alert(e instanceof Error ? e.message : 'Erro');
+      alert(e instanceof Error ? e.message : "Erro");
     }
   }
 
   // helper para formatar a data
   const formatDate = (timestamp?: string) => {
-    if (!timestamp) return '-';
+    if (!timestamp) return "-";
     try {
       // Converte timestamp para Date e formata como "Dia/Mês/Ano Hora:Minuto"
-      return format(parseISO(timestamp), 'dd/MM/yyyy HH:mm', { locale: ptBR });
+      return format(parseISO(timestamp), "dd/MM/yyyy HH:mm", { locale: ptBR });
     } catch (error) {
-      return 'Data inválida';
+      console.error("Erro ao formatar data: " + error);
+      return "Data inválida";
     }
   };
 
   const calcularTempoEspera = (dataIso?: string) => {
-    if (!dataIso || !agora) return '-';
+    if (!dataIso || !agora) return "-";
 
     try {
       const dataChegada = parseISO(dataIso);
       
       // não é para acontecer, mas SE a data de chegada for no futuro, mostra 0min para não quebrar
-      if (dataChegada > agora) return '0 min';
+      if (dataChegada > agora) return "0 min";
 
       const duracao = intervalToDuration({ start: dataChegada, end: agora });
       
@@ -79,10 +81,12 @@ useEffect(() => {
       return `${minutos}min`;
       
     } catch (error) {
-      console.error('Erro ao calcular tempo de espera. ' + error);
-      return '-';
+      console.error("Erro ao calcular tempo de espera. " + error);
+      return "-";
     }
   };
+
+
 
 
   if (loading) return <p>Carregando...</p>;
@@ -120,26 +124,26 @@ useEffect(() => {
                   <StatusBadge status={entrada.status}/>
                 </td>
                 <td className="p-3 flex gap-2">
-                  {entrada.status === 'AGUARDANDO' && (
+                  {entrada.status === "AGUARDANDO" && (
                     <button
-                      onClick={() => handleAvancar(entrada.id, 'CARREGANDO')}
+                      onClick={() => handleAvancar(entrada.id, "CARREGANDO")}
                       className="bg-blue-500 text-white p-2 text-xs"
                     >
                       Iniciar
                     </button>
                   )}
-                  {entrada.status === 'CARREGANDO' && (
+                  {entrada.status === "CARREGANDO" && (
                     <button
-                      onClick={() => handleAvancar(entrada.id, 'FINALIZADO')}
+                      onClick={() => handleAvancar(entrada.id, "FINALIZADO")}
                       className="bg-green-500 text-white p-2 text-xs"
                     >
                       Finalizar
                     </button>
                   )}
-                  {(entrada.status === 'AGUARDANDO' || entrada.status === 'CARREGANDO') && (
+                  {(entrada.status === "AGUARDANDO" || entrada.status === "CARREGANDO") && (
                     <button
-                      onClick={() => handleAvancar(entrada.id, 'CANCELADO')}
-                      className="bg-red-400 text-white p-2 text-xs"
+                    onClick={() => handleAvancar(entrada.id, "CANCELADO")}
+                    className="bg-red-400 text-white p-2 text-xs"
                     >
                       Cancelar
                     </button>

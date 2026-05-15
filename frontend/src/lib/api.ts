@@ -1,4 +1,4 @@
-import type { Motorista, Produto, EntradaFila, CriarEntradaFormData, Status } from "@/types";
+import type { Produto, EntradaFila, CriarEntradaFormData } from "@/types";
 
 
 const BASE_URL = "http://localhost:8080/api/v1";

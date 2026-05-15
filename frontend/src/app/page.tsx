@@ -5,8 +5,8 @@ import { ptBR } from "date-fns/locale";
 import { useEffect, useState } from "react";
 import { atualizarStatus, listarEntradas } from "@/lib/api";
 import { EntradaFila } from "@/types";
-import StatusBadge from "../../components/StatusBadge";
-import StatusCounters from "../../components/StatusCounter";
+import StatusBadge from "@/components/StatusBadge";
+import StatusCounters from "@/components/StatusCounter";
 
 export default function PainelFila() {
   const [fila, setFila] = useState<EntradaFila[]>([]);

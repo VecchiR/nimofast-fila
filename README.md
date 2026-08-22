@@ -1,4 +1,4 @@
-# Nimofast - Sistema de Fila de Carregamento de Combustível
+# Sistema de Gerenciamento de Base de Abastecimento de Combustíveis
 
 ## Diário do projeto
 Optei por disponibilizar minhas notas que utilizo conforme faço um projeto em que tenho que estudar coisas novas. O "diário do projeto" está disponível na raíz do projeto e no github em [diario_de_projeto.pdf](https://github.com/VecchiR/fuel-terminal/blob/main/diario_de_projeto.pdf)
@@ -137,10 +137,5 @@ NEXT_PUBLIC_API_URL=http://localhost:8080
 
 
 ---
-*Projeto feito por Rafael Vecchi Silva para o processo seletivo da Nimofast*
-
-Whatsapp: [(16) 99640-9380 ](https://wa.me/5516996409380)
-
 Linkedin: [rafaelvecchisilva](https://www.linkedin.com/in/rafaelvecchisilva/)
-
-Email: vecchi3108@gmail.com
+Email: contato@rafaelvecchi.com

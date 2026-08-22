@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "Fuel Terminal",
-  description: "Sistema de Fila de Carregamento de Combustível",
+  description: "Gerenciamento de Base de Abastecimento de Combustíveis",
 };
 
 export default function RootLayout({

@@ -1,9 +1,9 @@
 package main
 
 import (
-	"log"
 	"fuel-terminal/db"
 	"fuel-terminal/routes"
+	"log"
 	"os"
 
 	"github.com/gofiber/fiber/v3"

@@ -2,8 +2,8 @@ package handlers
 
 import (
 	"database/sql"
-	"log"
 	"fuel-terminal/models"
+	"log"
 	"regexp"
 	"strings"
 
